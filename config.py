@@ -1,0 +1,263 @@
+from __future__ import annotations
+
+from .common import INPUT_DIR, MODEL_DIR, OUTPUT_DIR
+
+
+def execution_config() -> dict:
+    """Return the deployable execution config.
+
+    Change only the small top-level path and mode fields for normal use.
+    The model logic below is a frozen copy of the current best LightGBM baseline.
+    """
+    return {
+        "mode": "train",  # train / test
+        "seed": 42,
+        "paths": {
+            "input_dir": INPUT_DIR,
+            "model_dir": MODEL_DIR,
+            "output_dir": OUTPUT_DIR,
+        },
+        "files": {
+            "train_by_stock": {
+                "AMZN": "AMZN_5levels_train.csv",
+                "GOOG": "GOOG_5levels_train.csv",
+                "INTC": "INTC_5levels_train.csv",
+                "MSFT": "MSFT_5levels_train.csv",
+            },
+            # Fill these in when test files arrive. Keys should be stock tickers.
+            "test_by_stock": {
+                # "AMZN": "AMZN_5levels_test.csv",
+                # "GOOG": "GOOG_5levels_test.csv",
+                # "INTC": "INTC_5levels_test.csv",
+                # "MSFT": "MSFT_5levels_test.csv",
+            },
+            # AAPL is handled autonomously in test mode when both files are provided.
+            "aapl_train_file": None,
+            "aapl_test_file": None,
+        },
+        "feature": {
+            "resample_ms": 100,
+            "use_log_size": True,
+        },
+        "split": {
+            "train_frac": 0.64,
+            "val_frac": 0.16,
+        },
+        "lightgbm": {
+            "threshold_quantile_grid": [0.08, 0.12, 0.16, 0.20, 0.24, 0.30],
+            "forced_last_penalty": 0.01,
+            "stability_penalty": 0.05,
+            "refit_on_train_plus_val": True,
+            "top_decile": 0.20,
+            "max_features_per_model": 8,
+            "extra_feature_columns": [
+                "depth_slope_bid_resid",
+                "microprice_edge_resid",
+                "pressure_term_structure",
+                "time_book_pressure3_interact",
+                "time_ask_top_share1_interact",
+            ],
+            "global_safe_features": [
+                "spread_bps",
+                "spread_mean_roll_1s",
+                "time_in_minute",
+                "time_in_minute_raw",
+                "mid_zscore_10s",
+                "momentum_10s_bps",
+                "mid_pos_in_range_10s",
+            ],
+            "feature_overrides_by_model": {
+                "GOOG_buy": [
+                    "momentum_10s_bps",
+                    "spread_bps",
+                    "mid_zscore_3s",
+                    "mid_pos_in_range_3s",
+                    "ask_up_count_10s",
+                    "ask_up_count_3s",
+                    "ask_top_share_3_of_5",
+                    "depth_slope_ask",
+                ],
+                "INTC_buy": [
+                    "microprice_edge_resid",
+                    "slope_diff_5",
+                    "depth_slope_bid_resid",
+                    "BidSizeLog_1",
+                    "mid_zscore_10s",
+                    "depth_ratio_5",
+                    "mid_pos_in_range_10s",
+                    "pressure_term_structure",
+                ],
+                "INTC_sell": [
+                    "momentum_10s_bps",
+                    "mid_zscore_10s",
+                    "mid_pos_in_range_10s",
+                    "mid_zscore_1s",
+                    "cross_buy_pressure_mean",
+                    "depth_sum_ask",
+                    "depth_concentration_diff_1_5",
+                    "AskSizeLog_3",
+                ],
+                "MSFT_buy": [
+                    "time_in_minute",
+                    "time_book_pressure3_interact",
+                    "book_pressure_3",
+                    "time_ask_top_share1_interact",
+                    "ask_top_share_1_of_5",
+                    "BidSizeLog_5",
+                    "mid_pos_in_range_10s",
+                    "secs_since_ask_down",
+                ],
+            },
+            "disable_score_logic_by_model": {
+                "INTC_sell": True,
+                "MSFT_buy": True,
+            },
+            "feature_extras_by_model": {
+                "AMZN_buy": ["mid_pos_in_range_10s", "book_pressure_5", "depth_ratio_5"],
+                "AMZN_sell": ["mid_pos_in_range_10s", "book_pressure_5", "microprice_pressure_interact"],
+                "GOOG_buy": ["mid_pos_in_range_10s", "mid_ret_500ms", "spread_bps"],
+                "GOOG_sell": ["mid_pos_in_range_10s", "mid_ret_500ms", "microprice_pressure_interact"],
+                "INTC_buy": ["mid_zscore_10s", "depth_ratio_5", "mid_pos_in_range_10s"],
+                "INTC_sell": ["mid_zscore_10s", "book_pressure_3", "depth_ratio_5"],
+                "MSFT_buy": ["mid_zscore_10s", "mid_pos_in_range_10s", "BidSizeLog_5"],
+                "MSFT_sell": ["mid_zscore_10s", "mid_pos_in_range_10s", "BidSizeLog_3"],
+            },
+            "candidate_param_sets": [
+                {
+                    "name": "depth3_compact",
+                    "learning_rate": 0.04,
+                    "n_estimators": 350,
+                    "num_leaves": 7,
+                    "max_depth": 3,
+                    "min_child_samples": 120,
+                    "subsample": 0.75,
+                    "subsample_freq": 1,
+                    "colsample_bytree": 0.70,
+                    "reg_alpha": 0.50,
+                    "reg_lambda": 4.0,
+                    "min_split_gain": 0.02,
+                },
+                {
+                    "name": "depth4_balanced",
+                    "learning_rate": 0.035,
+                    "n_estimators": 450,
+                    "num_leaves": 15,
+                    "max_depth": 4,
+                    "min_child_samples": 110,
+                    "subsample": 0.70,
+                    "subsample_freq": 1,
+                    "colsample_bytree": 0.65,
+                    "reg_alpha": 0.75,
+                    "reg_lambda": 5.0,
+                    "min_split_gain": 0.03,
+                },
+                {
+                    "name": "depth3_stable",
+                    "learning_rate": 0.03,
+                    "n_estimators": 550,
+                    "num_leaves": 11,
+                    "max_depth": 3,
+                    "min_child_samples": 140,
+                    "subsample": 0.80,
+                    "subsample_freq": 1,
+                    "colsample_bytree": 0.75,
+                    "reg_alpha": 0.25,
+                    "reg_lambda": 6.0,
+                    "min_split_gain": 0.01,
+                },
+            ],
+        },
+        "score": {
+            "threshold_by_side": {"buy": 3.0, "sell": 3.0},
+            "threshold_by_model": {
+                "AMZN_buy": 4.0,
+                "AMZN_sell": 2.5,
+                "GOOG_buy": 5.5,
+                "GOOG_sell": 3.0,
+                "INTC_buy": 2.5,
+                "INTC_sell": 3.0,
+                "MSFT_buy": 5.5,
+                "MSFT_sell": 6.0,
+            },
+            "signal_ewm_span_by_model": {
+                "AMZN_buy": 3,
+                "AMZN_sell": 3,
+                "GOOG_buy": 3,
+                "GOOG_sell": 3,
+                "INTC_buy": 3,
+                "INTC_sell": 3,
+                "MSFT_buy": 3,
+                "MSFT_sell": 3,
+            },
+            "gate_rules_by_model": {
+                "AMZN_buy": [{"feature": "spread_bps", "op": "le", "quantile": 0.30}],
+                "AMZN_sell": [{"feature": "spread_bps", "op": "le", "quantile": 0.35}],
+                "GOOG_buy": [{"feature": "spread_bps", "op": "le", "quantile": 0.25}],
+                "GOOG_sell": [{"feature": "spread_bps", "op": "le", "quantile": 0.25}],
+            },
+            "rules_by_model": {
+                "AMZN_buy": [
+                    {"feature": "spread_mean_roll_1s", "op": "le", "quantile": 0.20, "weight": 2.0},
+                    {"feature": "momentum_1s_bps", "op": "ge", "quantile": 0.80, "weight": 1.0},
+                    {"feature": "mid_zscore_1s", "op": "ge", "quantile": 0.65, "weight": 2.0},
+                ],
+                "AMZN_sell": [
+                    {"feature": "spread_mean_roll_1s", "op": "le", "quantile": 0.20, "weight": 2.0},
+                    {"feature": "bid_down_count_10s", "op": "le", "quantile": 0.25, "weight": 1.0},
+                    {"feature": "secs_since_bid_up", "op": "ge", "quantile": 0.75, "weight": 1.5},
+                    {
+                        "feature": "momentum_10s_bps",
+                        "op": "between",
+                        "lower_quantile": 0.20,
+                        "upper_quantile": 0.80,
+                        "weight": 1.0,
+                    },
+                    {"feature": "mid_zscore_10s", "op": "le", "quantile": 0.50, "weight": 1.0},
+                ],
+                "GOOG_buy": [
+                    {"feature": "spread_mean_roll_1s", "op": "le", "quantile": 0.20, "weight": 2.0},
+                    {"feature": "time_in_minute", "op": "ge", "quantile": 0.65, "weight": 1.5},
+                    {"feature": "depth_sum_bid", "op": "ge", "quantile": 0.70, "weight": 0.5},
+                    {"feature": "depth_slope_bid", "op": "ge", "quantile": 0.65, "weight": 2.0},
+                    {"feature": "momentum_1s_bps", "op": "ge", "quantile": 0.80, "weight": 2.0},
+                ],
+                "GOOG_sell": [
+                    {"feature": "momentum_10s_bps", "op": "ge", "quantile": 0.65, "weight": 1.0},
+                    {"feature": "mid_zscore_10s", "op": "ge", "quantile": 0.80, "weight": 1.5},
+                    {"feature": "secs_since_bid_up", "op": "ge", "quantile": 0.75, "weight": 1.5},
+                    {"feature": "time_in_minute", "op": "ge", "quantile": 0.80, "weight": 2.0},
+                    {"feature": "spread_mean_roll_1s", "op": "le", "quantile": 0.20, "weight": 1.5},
+                ],
+                "INTC_buy": [
+                    {"feature": "book_pressure_1", "op": "ge", "quantile": 0.75, "weight": 1.5},
+                    {"feature": "microprice_edge_bps", "op": "ge", "quantile": 0.70, "weight": 1.0},
+                    {"feature": "slope_diff_5", "op": "ge", "quantile": 0.70, "weight": 1.5},
+                    {"feature": "depth_slope_bid", "op": "ge", "quantile": 0.70, "weight": 1.5},
+                    {"feature": "BidSizeLog_1", "op": "ge", "quantile": 0.80, "weight": 1.0},
+                ],
+                "INTC_sell": [
+                    {"feature": "book_pressure_1", "op": "le", "quantile": 0.35, "weight": 2.0},
+                    {"feature": "microprice_edge_bps", "op": "le", "quantile": 0.35, "weight": 2.0},
+                    {"feature": "slope_diff_5", "op": "le", "quantile": 0.30, "weight": 1.5},
+                    {"feature": "ask_top_share_1_of_5", "op": "ge", "quantile": 0.75, "weight": 1.5},
+                ],
+                "MSFT_buy": [
+                    {"feature": "book_pressure_1", "op": "ge", "quantile": 0.75, "weight": 1.0},
+                    {"feature": "microprice_edge_bps", "op": "ge", "quantile": 0.80, "weight": 1.5},
+                    {"feature": "slope_diff_5", "op": "ge", "quantile": 0.70, "weight": 1.5},
+                    {"feature": "ask_top_share_1_of_5", "op": "le", "quantile": 0.20, "weight": 1.5},
+                    {"feature": "book_pressure_3", "op": "ge", "quantile": 0.70, "weight": 1.0},
+                ],
+                "MSFT_sell": [
+                    {"feature": "book_pressure_1", "op": "le", "quantile": 0.20, "weight": 2.0},
+                    {"feature": "microprice_edge_bps", "op": "le", "quantile": 0.35, "weight": 1.5},
+                    {"feature": "slope_diff_5", "op": "le", "quantile": 0.20, "weight": 0.5},
+                    {"feature": "ask_top_share_1_of_5", "op": "ge", "quantile": 0.80, "weight": 2.0},
+                    {"feature": "book_pressure_3", "op": "le", "quantile": 0.25, "weight": 1.5},
+                ],
+            },
+        },
+        "aapl": {
+            "candidate_source_stocks": ["AMZN", "GOOG", "INTC", "MSFT"],
+        },
+    }

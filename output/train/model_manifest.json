@@ -1,0 +1,176 @@
+[
+  {
+    "stock": "AMZN",
+    "side": "buy",
+    "model_path": "D:\\lkh\\Cornell\\26 Spring\\ORIE 5259 Algorithmic Trading\\code\\execution_algorithm\\model\\AMZN_buy.pkl",
+    "param_set": "depth4_balanced",
+    "threshold_quantile": 0.3,
+    "threshold": -1.9831517758246782,
+    "best_iteration": 450,
+    "rule_template_stock": "AMZN",
+    "use_score_logic": true,
+    "features": [
+      "spread_mean_roll_1s",
+      "momentum_1s_bps",
+      "mid_zscore_1s",
+      "spread_bps",
+      "mid_pos_in_range_10s",
+      "book_pressure_5",
+      "depth_ratio_5",
+      "time_in_minute",
+      "score_logic_signal"
+    ]
+  },
+  {
+    "stock": "AMZN",
+    "side": "sell",
+    "model_path": "D:\\lkh\\Cornell\\26 Spring\\ORIE 5259 Algorithmic Trading\\code\\execution_algorithm\\model\\AMZN_sell.pkl",
+    "param_set": "depth4_balanced",
+    "threshold_quantile": 0.24,
+    "threshold": -2.041181822549194,
+    "best_iteration": 450,
+    "rule_template_stock": "AMZN",
+    "use_score_logic": true,
+    "features": [
+      "spread_mean_roll_1s",
+      "bid_down_count_10s",
+      "secs_since_bid_up",
+      "momentum_10s_bps",
+      "mid_zscore_10s",
+      "spread_bps",
+      "mid_pos_in_range_10s",
+      "book_pressure_5",
+      "score_logic_signal"
+    ]
+  },
+  {
+    "stock": "GOOG",
+    "side": "buy",
+    "model_path": "D:\\lkh\\Cornell\\26 Spring\\ORIE 5259 Algorithmic Trading\\code\\execution_algorithm\\model\\GOOG_buy.pkl",
+    "param_set": "depth4_balanced",
+    "threshold_quantile": 0.12,
+    "threshold": -1.2850842326082446,
+    "best_iteration": 450,
+    "rule_template_stock": "GOOG",
+    "use_score_logic": true,
+    "features": [
+      "momentum_10s_bps",
+      "spread_bps",
+      "mid_zscore_3s",
+      "mid_pos_in_range_3s",
+      "ask_up_count_10s",
+      "ask_up_count_3s",
+      "ask_top_share_3_of_5",
+      "depth_slope_ask",
+      "score_logic_signal"
+    ]
+  },
+  {
+    "stock": "GOOG",
+    "side": "sell",
+    "model_path": "D:\\lkh\\Cornell\\26 Spring\\ORIE 5259 Algorithmic Trading\\code\\execution_algorithm\\model\\GOOG_sell.pkl",
+    "param_set": "depth4_balanced",
+    "threshold_quantile": 0.3,
+    "threshold": -1.3113212793098064,
+    "best_iteration": 450,
+    "rule_template_stock": "GOOG",
+    "use_score_logic": true,
+    "features": [
+      "momentum_10s_bps",
+      "mid_zscore_10s",
+      "secs_since_bid_up",
+      "time_in_minute",
+      "spread_mean_roll_1s",
+      "spread_bps",
+      "mid_pos_in_range_10s",
+      "mid_ret_500ms",
+      "score_logic_signal"
+    ]
+  },
+  {
+    "stock": "INTC",
+    "side": "buy",
+    "model_path": "D:\\lkh\\Cornell\\26 Spring\\ORIE 5259 Algorithmic Trading\\code\\execution_algorithm\\model\\INTC_buy.pkl",
+    "param_set": "depth4_balanced",
+    "threshold_quantile": 0.3,
+    "threshold": -1.1268746565442778,
+    "best_iteration": 450,
+    "rule_template_stock": "INTC",
+    "use_score_logic": true,
+    "features": [
+      "microprice_edge_resid",
+      "slope_diff_5",
+      "depth_slope_bid_resid",
+      "BidSizeLog_1",
+      "mid_zscore_10s",
+      "depth_ratio_5",
+      "mid_pos_in_range_10s",
+      "pressure_term_structure",
+      "score_logic_signal"
+    ]
+  },
+  {
+    "stock": "INTC",
+    "side": "sell",
+    "model_path": "D:\\lkh\\Cornell\\26 Spring\\ORIE 5259 Algorithmic Trading\\code\\execution_algorithm\\model\\INTC_sell.pkl",
+    "param_set": "depth4_balanced",
+    "threshold_quantile": 0.3,
+    "threshold": -0.9126061727347002,
+    "best_iteration": 450,
+    "rule_template_stock": "INTC",
+    "use_score_logic": false,
+    "features": [
+      "momentum_10s_bps",
+      "mid_zscore_10s",
+      "mid_pos_in_range_10s",
+      "mid_zscore_1s",
+      "cross_buy_pressure_mean",
+      "depth_sum_ask",
+      "depth_concentration_diff_1_5",
+      "AskSizeLog_3"
+    ]
+  },
+  {
+    "stock": "MSFT",
+    "side": "buy",
+    "model_path": "D:\\lkh\\Cornell\\26 Spring\\ORIE 5259 Algorithmic Trading\\code\\execution_algorithm\\model\\MSFT_buy.pkl",
+    "param_set": "depth4_balanced",
+    "threshold_quantile": 0.24,
+    "threshold": -1.0321849588781231,
+    "best_iteration": 450,
+    "rule_template_stock": "MSFT",
+    "use_score_logic": false,
+    "features": [
+      "time_in_minute",
+      "time_book_pressure3_interact",
+      "book_pressure_3",
+      "time_ask_top_share1_interact",
+      "ask_top_share_1_of_5",
+      "BidSizeLog_5",
+      "mid_pos_in_range_10s",
+      "secs_since_ask_down"
+    ]
+  },
+  {
+    "stock": "MSFT",
+    "side": "sell",
+    "model_path": "D:\\lkh\\Cornell\\26 Spring\\ORIE 5259 Algorithmic Trading\\code\\execution_algorithm\\model\\MSFT_sell.pkl",
+    "param_set": "depth4_balanced",
+    "threshold_quantile": 0.3,
+    "threshold": -1.2460991644948023,
+    "best_iteration": 450,
+    "rule_template_stock": "MSFT",
+    "use_score_logic": true,
+    "features": [
+      "book_pressure_1",
+      "microprice_edge_bps",
+      "slope_diff_5",
+      "ask_top_share_1_of_5",
+      "book_pressure_3",
+      "mid_zscore_10s",
+      "mid_pos_in_range_10s",
+      "BidSizeLog_3",
+      "score_logic_signal"
+    ]
+  }
+]
