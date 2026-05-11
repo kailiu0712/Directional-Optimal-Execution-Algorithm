@@ -1,0 +1,9 @@
+stock,side,source_stock,objective,param_set,threshold_quantile,best_iteration,features,use_score_logic
+AAPL,buy,AMZN,0.038719001233374836,depth4_balanced,0.3,450,"spread_mean_roll_1s,momentum_1s_bps,mid_zscore_1s,spread_bps,mid_pos_in_range_10s,book_pressure_5,depth_ratio_5,time_in_minute,score_logic_signal",True
+AAPL,buy,GOOG,0.04147878425328102,depth4_balanced,0.24,450,"momentum_10s_bps,spread_bps,mid_zscore_3s,mid_pos_in_range_3s,ask_up_count_10s,ask_up_count_3s,ask_top_share_3_of_5,depth_slope_ask,score_logic_signal",True
+AAPL,buy,INTC,0.06779731492681274,depth4_balanced,0.12,450,"microprice_edge_resid,slope_diff_5,depth_slope_bid_resid,BidSizeLog_1,mid_zscore_10s,depth_ratio_5,mid_pos_in_range_10s,pressure_term_structure,score_logic_signal",True
+AAPL,buy,MSFT,0.024356802918439703,depth4_balanced,0.3,450,"time_in_minute,time_book_pressure3_interact,book_pressure_3,time_ask_top_share1_interact,ask_top_share_1_of_5,BidSizeLog_5,mid_pos_in_range_10s,secs_since_ask_down",False
+AAPL,sell,AMZN,0.04443506082067591,depth4_balanced,0.16,450,"spread_mean_roll_1s,bid_down_count_10s,secs_since_bid_up,momentum_10s_bps,mid_zscore_10s,spread_bps,mid_pos_in_range_10s,book_pressure_5,score_logic_signal",True
+AAPL,sell,GOOG,0.031047717415910052,depth4_balanced,0.3,450,"momentum_10s_bps,mid_zscore_10s,secs_since_bid_up,time_in_minute,spread_mean_roll_1s,spread_bps,mid_pos_in_range_10s,mid_ret_500ms,score_logic_signal",True
+AAPL,sell,INTC,0.05480566093618727,depth4_balanced,0.12,450,"momentum_10s_bps,mid_zscore_10s,mid_pos_in_range_10s,mid_zscore_1s,cross_buy_pressure_mean,depth_sum_ask,depth_concentration_diff_1_5,AskSizeLog_3",False
+AAPL,sell,MSFT,0.05486125240537006,depth4_balanced,0.12,450,"book_pressure_1,microprice_edge_bps,slope_diff_5,ask_top_share_1_of_5,book_pressure_3,mid_zscore_10s,mid_pos_in_range_10s,BidSizeLog_3,score_logic_signal",True

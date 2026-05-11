@@ -1,0 +1,7 @@
+# Raw LOB data — too large for git
+input/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo

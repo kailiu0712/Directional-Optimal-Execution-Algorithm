@@ -10,7 +10,7 @@ def execution_config() -> dict:
     The model logic below is a frozen copy of the current best LightGBM baseline.
     """
     return {
-        "mode": "train",  # train / test
+        "mode": "test",  # train / test  ← set to "train" to retrain; "test" to evaluate
         "seed": 42,
         "paths": {
             "input_dir": INPUT_DIR,
@@ -26,14 +26,14 @@ def execution_config() -> dict:
             },
             # Fill these in when test files arrive. Keys should be stock tickers.
             "test_by_stock": {
-                # "AMZN": "AMZN_5levels_test.csv",
-                # "GOOG": "GOOG_5levels_test.csv",
-                # "INTC": "INTC_5levels_test.csv",
-                # "MSFT": "MSFT_5levels_test.csv",
+                "AMZN": "AMZN_5levels_test.csv",
+                "GOOG": "GOOG_5levels_test.csv",
+                "INTC": "INTC_5levels_test.csv",
+                "MSFT": "MSFT_5levels_test.csv",
             },
             # AAPL is handled autonomously in test mode when both files are provided.
-            "aapl_train_file": None,
-            "aapl_test_file": None,
+            "aapl_train_file": "AAPL_5levels_train.csv",
+            "aapl_test_file": "AAPL_5levels_test.csv",
         },
         "feature": {
             "resample_ms": 100,

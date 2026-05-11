@@ -13,7 +13,6 @@ from .data import (
     build_feature_frames_from_paths,
     feature_columns,
     model_key,
-    split_train_val_only,
     summarize_cost_improvement,
     summarize_trades,
 )
@@ -238,13 +237,6 @@ def _fit_aapl_autonomous(cfg: dict, logger) -> tuple[list[pd.DataFrame], list[pd
     test_frames = build_feature_frames_from_paths(cfg, {"AAPL": aapl_test_path})
     base_train_df = train_frames["AAPL"].copy()
     base_test_df = test_frames["AAPL"].copy()
-    inner_train_ratio = float(cfg["split"]["train_frac"]) / max(
-        float(cfg["split"]["train_frac"]) + float(cfg["split"]["val_frac"]),
-        1e-12,
-    )
-    train_df, val_df = split_train_val_only(base_train_df, train_frac_within_history=inner_train_ratio)
-    train_minutes = sorted(pd.to_datetime(train_df["minute"]).drop_duplicates().tolist())
-    val_minutes = sorted(pd.to_datetime(val_df["minute"]).drop_duplicates().tolist())
     all_train_minutes = sorted(pd.to_datetime(base_train_df["minute"]).drop_duplicates().tolist())
     test_minutes = sorted(pd.to_datetime(base_test_df["minute"]).drop_duplicates().tolist())
 
@@ -260,7 +252,7 @@ def _fit_aapl_autonomous(cfg: dict, logger) -> tuple[list[pd.DataFrame], list[pd
         for source_stock in cfg["aapl"]["candidate_source_stocks"]:
             selected_features = resolve_feature_set(cfg, available_features, source_stock, side)
             use_score_logic = uses_score_logic_feature(cfg, source_stock, side)
-            selection_aug_state = fit_augmentation_state(train_df)
+            selection_aug_state = fit_augmentation_state(base_train_df)
             selection_augmented = augment_feature_frame(base_train_df, selection_aug_state)
             selection_panel = build_second_panel(
                 selection_augmented,
@@ -274,8 +266,8 @@ def _fit_aapl_autonomous(cfg: dict, logger) -> tuple[list[pd.DataFrame], list[pd
                 stock="AAPL",
                 side=side,
                 selected_features=selected_features,
-                train_minutes=train_minutes,
-                val_minutes=val_minutes,
+                train_minutes=all_train_minutes,
+                val_minutes=all_train_minutes,
                 cfg=cfg,
                 logger=logger,
                 rule_stock=source_stock,
@@ -317,8 +309,8 @@ def _fit_aapl_autonomous(cfg: dict, logger) -> tuple[list[pd.DataFrame], list[pd
             stock="AAPL",
             side=side,
             selected_features=best_candidate["selected_features"],
-            train_minutes=train_minutes,
-            val_minutes=val_minutes,
+            train_minutes=all_train_minutes,
+            val_minutes=all_train_minutes,
             cfg=cfg,
             logger=logger,
             rule_stock=str(best_candidate["source_stock"]),
